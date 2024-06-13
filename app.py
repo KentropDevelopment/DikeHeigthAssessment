@@ -11,6 +11,8 @@
 #
 #   After that return to your VIKTOR environment where you will learn how to create your first app!
 #   Keep this Codespace open as this is the place where you will write your code.
+import time
+
 import numpy
 from viktor.parametrization import (
     ViktorParametrization,
@@ -23,8 +25,9 @@ from viktor.parametrization import (
     OptionField,
     AnalyseButton,
     Tab,
-    TextField,
+    TextField, ActionButton,
 )
+from viktor.core import progress_message
 
 from viktor import ViktorController
 from viktor.views import (
@@ -45,24 +48,29 @@ import rasterio.plot
 from viktor.geometry import RDWGSConverter
 
 import shp_helpers as shphelp
+from interpolate_required_height import get_current_height_in_rd, get_length_coordinate_of_points, \
+    get_required_height_points
 
 
 class Parametrization(ViktorParametrization):
     step_1 = Step("Trajectory and Height", description="Input the trajectory and height of the dike",
                   views=["get_map_view_1", "get_plotly_view"])
 
-    step_1.section_1 = Section("Import Dike shp")
-    step_1.section_1.file_field_1 = FileField("Shapefile of Dike", flex=50)
-    step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50, default=10)
+    step_1.section_1 = Section("Select dike trajectory")
+    # step_1.section_1.file_field_1 = FileField("Shapefile of Dike", flex=50)
+    # step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50, default=10)
+    step_1.section_1.dike_selection = OptionField("National dike trajectory code", options=["16-3", "15-1","15-2", "15-3"])
     
-    step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50)
+    # step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50)
+
 
     step_1.section_2 = Section("Calculate Dike Height")
-    step_1.section_2.dynamic_array_1 = DynamicArray("Interpolation Points",
-                                                    description="Modify the interpolation points")
-    step_1.section_2.dynamic_array_1.geo_point_field_1 = GeoPointField("Interpolation Point")
-    step_1.section_2.dynamic_array_1.number_field_1 = NumberField("Dike height", flex=50,
-                                                                  description="Crest height of the dike")
+    # step_1.section_2.dynamic_array_1 = DynamicArray("Interpolation Points",
+                                                    # description="Modify the interpolation points")
+    step_1.section_2.calculate_button = ActionButton("Calculate required height", method="calculate_height",)
+    # step_1.section_2.dynamic_array_1.geo_point_field_1 = GeoPointField("Interpolation Point")
+    # step_1.section_2.dynamic_array_1.number_field_1 = NumberField("Dike height", flex=50,
+    #                                                               description="Crest height of the dike")
 
     step_2 = Step("Asses Design", description="Compare the design to the existing dike", views=["get_map_view_2"])
     step_2.tab_1 = Tab("Asses")
@@ -79,6 +87,13 @@ class Parametrization(ViktorParametrization):
 class Controller(ViktorController):
     label = "My Entity Type"
     parametrization = Parametrization
+
+    def calculate_height(self):
+        progress_message("Connecting to API...")
+        time.sleep(5)
+        progress_message("Calculating dike height...")
+        time.sleep(5)
+
 
     def analyse_button_method_1(self, params, **kwargs):
         return
@@ -111,15 +126,9 @@ class Controller(ViktorController):
             except:
                 pass
 
-        print(shapeline_lon)
-        print(shapeline_lat)
-        print(shapeline_z)
-
         dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')[0]
         dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')[0]
-        print(json.dumps(dike_points, sort_keys=True, indent=4))
         # print(len(dike_line["features"][0]["geometry"]["coordinates"]))
-        print(len(dike_points["features"]))
 
         dike_lon = []
         dike_lat = []
@@ -220,6 +229,11 @@ class Controller(ViktorController):
         #     dike_lat.append(y_point)
         #     dike_z.append(z_point)
 
+        x_current, y_current, z_current, l_current = get_current_height_in_rd()
+        print(l_current)
+
+        x_required, y_required, z_required, l_required = get_required_height_points()
+
         dike_lon = [x for x in range(10)]
         dike_z = [x for x in range(10)]
         dike_lon_2 = [x for x in range(15)]
@@ -228,8 +242,8 @@ class Controller(ViktorController):
         print(f"Interpolated: {numpy.interp(5.5, dike_lon_2, dike_z_2)}")
 
         fig = go.Figure(
-            data=[go.Scatter(x=dike_lon, y=dike_z)],
-            layout=go.Layout(title=go.layout.Title(text="A Figure Specified By A Graph Object"))
+            data=[go.Scatter(x=l_required, y=z_required, name='Required height')],
+            layout=go.Layout(title=go.layout.Title(text="Dike height assessment"))
         )
-        fig.add_trace(go.Scatter(x=dike_lon_2, y=dike_z_2))
+        fig.add_trace(go.Scatter(x=l_current, y=z_current, name='Current height'))
         return PlotlyResult(fig.to_json())
