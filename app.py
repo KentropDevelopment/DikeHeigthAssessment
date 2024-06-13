@@ -36,18 +36,24 @@ from viktor.views import (
 
 class Parametrization(ViktorParametrization):
     step_1 = Step("Trajectory and Height", description="Input the trajectory and height of the dike", views=["get_map_view_1"])
-    step_1.section_1 = Section("Calculate Dike Height")
-    step_1.section_1.dynamic_array_1 = DynamicArray("Interpolation Points", description="Modify the interpolation points")
-    step_1.section_1.dynamic_array_1.geo_point_field_1 = GeoPointField("Interpolation Point")
-    step_1.section_1.dynamic_array_1.number_field_1 = NumberField("Dike height", flex=50, description="Crest height of the dike")
-    step_1.section_2 = Section("Import Dike shp")
-    step_1.section_2.file_field_1 = FileField("Shapefile of Dike", flex=50)
-    step_1.section_2.number_field_1 = NumberField("Crest Height", flex=50)
+
+    step_1.section_1 = Section("Import Dike shp")
+    step_1.section_1.file_field_1 = FileField("Shapefile of Dike", flex=50)
+    step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50)
+    
+    step_1.section_2 = Section("Calculate Dike Height")
+    step_1.section_2.dynamic_array_1 = DynamicArray("Interpolation Points", description="Modify the interpolation points")
+    step_1.section_2.dynamic_array_1.geo_point_field_1 = GeoPointField("Interpolation Point")
+    step_1.section_2.dynamic_array_1.number_field_1 = NumberField("Dike height", flex=50, description="Crest height of the dike")
+
+    
     step_2 = Step("Asses Design", description="Compare the design to the existing dike", views=["get_map_view_2"])
     step_2.tab_1 = Tab("Asses")
     step_2.tab_1.section_1 = Section("Get Height Data")
     step_2.tab_1.section_1.option_field_1 = OptionField("Show Features", options=["Designed Dike", "Real Height", "Error"])
     step_2.tab_1.section_1.analyse_button_1 = AnalyseButton("Get height data", method="analyse_button_method_1", longpoll=False)
+    
+    
     step_3 = Step("Report", description="Create a report of the different scenario's")
     step_3.text_field_1 = TextField("Tba")
 
