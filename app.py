@@ -36,13 +36,13 @@ from viktor.views import (
 
 
 import shp_helpers as shphelp
-
+import json
 class Parametrization(ViktorParametrization):
     step_1 = Step("Trajectory and Height", description="Input the trajectory and height of the dike", views=["get_map_view_1"])
 
     step_1.section_1 = Section("Import Dike shp")
     step_1.section_1.file_field_1 = FileField("Shapefile of Dike", flex=50)
-    step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50)
+    step_1.section_1.number_field_1 = NumberField("Crest Height", flex=50, default=10)
     
     step_1.section_2 = Section("Calculate Dike Height")
     step_1.section_2.dynamic_array_1 = DynamicArray("Interpolation Points", description="Modify the interpolation points")
@@ -74,9 +74,9 @@ class Controller(ViktorController):
         dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
         dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
         # print(dike_line)
-        # dike_poly = shphelp.linestring_to_polygon(dike_line, 10)
-
-        geojson = shphelp.merge_geojson([dike_line, dike_points])
+        dike_poly = shphelp.linestring_to_polygon(dike_line, params.step_1.section_1.number_field_1)
+        dike_poly = json.loads(dike_poly)
+        geojson = shphelp.merge_geojson([dike_line, dike_points, dike_poly])
 
         return GeoJSONResult(geojson)
     
