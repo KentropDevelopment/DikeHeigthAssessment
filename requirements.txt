@@ -2,3 +2,5 @@ viktor==14.7.0
 geopandas
 shapely
 fiona
+plotly
+rasterio
