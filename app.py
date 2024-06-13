@@ -25,8 +25,8 @@ from viktor.parametrization import (
     Tab,
     TextField,
 )
-from viktor.result import (
-)
+
+
 from viktor import ViktorController
 from viktor.views import (
     MapView,
