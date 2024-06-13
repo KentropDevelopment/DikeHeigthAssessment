@@ -26,13 +26,16 @@ from viktor.parametrization import (
     TextField,
 )
 
-
 from viktor import ViktorController
 from viktor.views import (
     MapView,
-    MapResult,
+    MapResult, 
+    GeoJSONResult,
+    GeoJSONView
 )
 
+
+import shp_helpers as shphelp
 
 class Parametrization(ViktorParametrization):
     step_1 = Step("Trajectory and Height", description="Input the trajectory and height of the dike", views=["get_map_view_1"])
@@ -65,9 +68,16 @@ class Controller(ViktorController):
     def analyse_button_method_1(self, params, **kwargs):
         return
 
-    @MapView('Plane View', duration_guess=1)
+    @GeoJSONView('Plane View', duration_guess=1)
     def get_map_view_1(self, params, **kwargs):
-        return MapResult(features=[])
+
+        dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
+        dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
+        
+
+        geojson = shphelp.merge_geojson([dike_line, dike_points])
+
+        return GeoJSONResult(geojson)
     
     @MapView('Dike Assesment', duration_guess=1)
     def get_map_view_2(self, params, **kwargs):
