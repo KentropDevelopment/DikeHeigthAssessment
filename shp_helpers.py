@@ -22,6 +22,7 @@ def shp_to_geojson(shp_path):
     # Convert the GeoDataFrame to GeoJSON format
     geojson_str = gdf.to_json()
     geojson = json.loads(geojson_str)
+    list_of_tuples = []
     for feature in geojson['features']:
         new_coord = []
 
@@ -31,6 +32,7 @@ def shp_to_geojson(shp_path):
                 x = coord[0]
                 y = coord[1]
                 lat, lon = RDWGSConverter.from_rd_to_wgs((x, y))
+                list_of_tuples.append((x, y))
                 new_coord.append((lon, lat))
             feature['geometry']['coordinates'] = new_coord
         else:
@@ -38,9 +40,10 @@ def shp_to_geojson(shp_path):
             x = coord[0]
             y = coord[1]
             lat, lon = RDWGSConverter.from_rd_to_wgs((x, y))
+            list_of_tuples.append((x, y))
             feature['geometry']['coordinates'] = [lon, lat]
 
-    return geojson
+    return geojson, list_of_tuples
 
 def merge_geojson(geojson_list):
     """
@@ -90,9 +93,8 @@ def linestring_to_polygon(line_string, dike_width):
     return gdf.to_json()
 
 
+
 # points = shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
 # line = shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
 # b = 10
-
-
-# print(linestring_to_polygon(line, b))
+# print(check)

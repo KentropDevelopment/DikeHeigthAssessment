@@ -134,68 +134,69 @@ class Controller(ViktorController):
 
 
 
-        dike_line_offset = shphelp.shp_to_geojson_offset('sample_data/dike_trajectories/dike_trajectory_sample.shp', 0,
-                                                         100)
+        # dike_line_offset = shphelp.shp_to_geojson_offset('sample_data/dike_trajectories/dike_trajectory_sample.shp', 0,
+        #                                                  100)
         # print(len(dike_line_offset["features"][0]["geometry"]["coordinates"]))
 
-        l1_p1 = list(dike_line["features"][0]["geometry"]["coordinates"][0])
-        l1_p2 = list(dike_line["features"][0]["geometry"]["coordinates"][1])
-        l2_p1 = list(dike_line_offset["features"][0]["geometry"]["coordinates"][0])
-        l2_p2 = list(dike_line_offset["features"][0]["geometry"]["coordinates"][1])
-        coordinates = [
-            l1_p1,
-            l1_p2,
-            l2_p2,
-            l2_p1,
-            l1_p1
-        ]
+        # l1_p1 = list(dike_line["features"][0]["geometry"]["coordinates"][0])
+        # l1_p2 = list(dike_line["features"][0]["geometry"]["coordinates"][1])
+        # # l2_p1 = list(dike_line_offset["features"][0]["geometry"]["coordinates"][0])
+        # # l2_p2 = list(dike_line_offset["features"][0]["geometry"]["coordinates"][1])
+        # coordinates = [
+        #     l1_p1,
+        #     l1_p2,
+        #     l2_p2,
+        #     l2_p1,
+        #     l1_p1
+        # ]
         # print(coordinates)
 
-        geojson_example = {
-            "type": "FeatureCollection",
-            "features": [
-                {"type": "Feature",
-                 "geometry": {
-                     "type": "Polygon",
-                     "coordinates":
-                         [
-                             coordinates
-                         ]
-                 },
-                 "properties": {
-                     "description": "Area",
-                     "fill": "#FF0000"
-                 }
-                 }
-            ]
-        }
+        # geojson_example = {
+        #     "type": "FeatureCollection",
+        #     "features": [
+        #         {"type": "Feature",
+        #          "geometry": {
+        #              "type": "Polygon",
+        #              "coordinates":
+        #                  [
+        #                      coordinates
+        #                  ]
+        #          },
+        #          "properties": {
+        #              "description": "Area",
+        #              "fill": "#FF0000"
+        #          }
+        #          }
+        #     ]
+        # }
+        #
+        # geojson_shapeline = {"type": "FeatureCollection",
+        #                      "features": [
+        #                          {"type": "Feature",
+        #                           "geometry": {"type": "Point", "coordinates": [
+        #                               5.80462559682704,
+        #                               51.92103553990242
+        #                           ]},
+        #                           "properties": {"prop0": "value0"}
+        #                           },
+        #                          {"type": "Feature",
+        #                           "geometry": {"type": "Point", "coordinates": [
+        #                               6.80462559682704,
+        #                               51.92103553990242
+        #                           ]},
+        #                           "properties": {"prop0": "value0"}
+        #                           },
+        #                      ]
+        #                      }
 
-        geojson_shapeline = {"type": "FeatureCollection",
-                             "features": [
-                                 {"type": "Feature",
-                                  "geometry": {"type": "Point", "coordinates": [
-                                      5.80462559682704,
-                                      51.92103553990242
-                                  ]},
-                                  "properties": {"prop0": "value0"}
-                                  },
-                                 {"type": "Feature",
-                                  "geometry": {"type": "Point", "coordinates": [
-                                      6.80462559682704,
-                                      51.92103553990242
-                                  ]},
-                                  "properties": {"prop0": "value0"}
-                                  },
-                             ]
-                             }
-
-        geojson = shphelp.merge_geojson([dike_line, dike_points, dike_line_offset, geojson_example, geojson_shapeline])
-        dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
-        dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
-        # print(dike_line)
-        dike_poly = shphelp.linestring_to_polygon(dike_line, params.step_1.section_1.number_field_1)
-        dike_poly = json.loads(dike_poly)
-        geojson = shphelp.merge_geojson([dike_line, dike_points, dike_poly])
+        # geojson = shphelp.merge_geojson([dike_line, dike_points, dike_line_offset, geojson_example, geojson_shapeline])
+        geojson = shphelp.merge_geojson([dike_line, dike_points])
+        # dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
+        # dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
+        # # print(dike_line)
+        # # dike_poly = shphelp.linestring_to_polygon(dike_line, params.step_1.section_1.number_field_1)
+        # # dike_poly = json.loads(dike_poly)
+        # geojson = shphelp.merge_geojson([dike_line, dike_points])
 
         return GeoJSONResult(geojson)
 
@@ -206,21 +207,26 @@ class Controller(ViktorController):
     @PlotlyView("Plotly view", duration_guess=1)
     def get_plotly_view(self, params, **kwargs):
 
-        dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')[0]
+        # dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')[0]
+        #
+        # dike_lon = []
+        # dike_lat = []
+        # dike_z = []
+        # for p in dike_points["features"]:
+        #     x_point = p["geometry"]["coordinates"][0]
+        #     y_point = p["geometry"]["coordinates"][1]
+        #     z_point = p["properties"]["z1"]
+        #     dike_lon.append(x_point)
+        #     dike_lat.append(y_point)
+        #     dike_z.append(z_point)
 
-        dike_lon = []
-        dike_lat = []
-        dike_z = []
-        for p in dike_points["features"]:
-            x_point = p["geometry"]["coordinates"][0]
-            y_point = p["geometry"]["coordinates"][1]
-            z_point = p["properties"]["z1"]
-            dike_lon.append(x_point)
-            dike_lat.append(y_point)
-            dike_z.append(z_point)
+        dike_lon = [x for x in range(10)]
+        dike_z = [x for x in range(10)]
+        dike_z_2 = [x*2 for x in range(10)]
 
         fig = go.Figure(
             data=[go.Scatter(x=dike_lon, y=dike_z)],
             layout=go.Layout(title=go.layout.Title(text="A Figure Specified By A Graph Object"))
         )
+        fig.add_trace(go.Scatter(x=dike_lon, y=dike_z_2))
         return PlotlyResult(fig.to_json())
