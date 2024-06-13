@@ -11,7 +11,7 @@
 #
 #   After that return to your VIKTOR environment where you will learn how to create your first app!
 #   Keep this Codespace open as this is the place where you will write your code.
-
+import numpy
 from viktor.parametrization import (
     ViktorParametrization,
     GeoPointField,
@@ -222,11 +222,14 @@ class Controller(ViktorController):
 
         dike_lon = [x for x in range(10)]
         dike_z = [x for x in range(10)]
-        dike_z_2 = [x*2 for x in range(10)]
+        dike_lon_2 = [x for x in range(15)]
+        dike_z_2 = [x*2 for x in range(15)]
+
+        print(f"Interpolated: {numpy.interp(5.5, dike_lon_2, dike_z_2)}")
 
         fig = go.Figure(
             data=[go.Scatter(x=dike_lon, y=dike_z)],
             layout=go.Layout(title=go.layout.Title(text="A Figure Specified By A Graph Object"))
         )
-        fig.add_trace(go.Scatter(x=dike_lon, y=dike_z_2))
+        fig.add_trace(go.Scatter(x=dike_lon_2, y=dike_z_2))
         return PlotlyResult(fig.to_json())
