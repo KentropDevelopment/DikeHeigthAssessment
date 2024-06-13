@@ -73,7 +73,8 @@ class Controller(ViktorController):
 
         dike_line = shphelp.shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
         dike_points = shphelp.shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
-        
+        # print(dike_line)
+        # dike_poly = shphelp.linestring_to_polygon(dike_line, 10)
 
         geojson = shphelp.merge_geojson([dike_line, dike_points])
 

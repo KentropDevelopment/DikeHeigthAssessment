@@ -1,5 +1,9 @@
 import geopandas as gpd
 import json
+from shapely.geometry import LineString, Polygon
+from shapely.geometry.geo import mapping, shape, MultiPolygon
+from shapely import affinity
+
 
 from viktor.geometry import RDWGSConverter
 
@@ -65,7 +69,37 @@ def merge_geojson(geojson_list):
     return merged_geojson
 
 
+def linestring_to_polygon(geojson_linestring, dike_width):
+    """
+    Converts a GeoJSON LineString to a Polygon representing a road with a given width.
 
-# check = shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
+    Parameters:
+    geojson_linestring (dict): A GeoJSON LineString object.
+    road_width (float): The width of the road.
 
+    Returns:
+    dict: A GeoJSON Polygon object representing the road.
+    """
+    # print(geojson_linestring['type'])
+    linestring = shape(geojson_linestring['features'][0]['geometry'])
+
+    # Create a buffer around the linestring
+    buffered_polygon = linestring.buffer(dike_width / 2, cap_style=2, join_style=2)
+    polygon_geojson = mapping(buffered_polygon)
+    print(polygon_geojson)
+
+    # Create a GeoJSON Feature
+    geojson = {
+        "type": "Feature",
+        "geometry": polygon_geojson,
+        "properties": geojson_linestring.get('properties', {})
+    }
+
+    return geojson
+
+
+
+# points = shp_to_geojson('sample_data/required_dike_height_points/points_sampled.shp')
+# line = shp_to_geojson('sample_data/dike_trajectories/dike_trajectory_sample.shp')
+# b = 10
 # print(check)
