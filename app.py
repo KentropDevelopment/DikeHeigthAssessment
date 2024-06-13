@@ -230,7 +230,6 @@ class Controller(ViktorController):
         #     dike_z.append(z_point)
 
         x_current, y_current, z_current, l_current = get_current_height_in_rd()
-        print(l_current)
 
         x_required, y_required, z_required, l_required = get_required_height_points()
 
